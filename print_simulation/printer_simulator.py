@@ -16,13 +16,21 @@ aant_path = os.path.join(base_dir, 'AANT_pi_sim')
 sys.path.extend([gcode_reader_path, aant_path])
 
 from gcode_reader import GcodeReader, GcodeType
-from pi_sim_system import update_print_parameters
+from pi_sim_system import Printer, ComputerPi
 # Import moved above
 
 class PrinterSimulator:
     def __init__(self, root):
         self.root = root
         self.root.title("3D Printer Simulation System")
+        
+        # Initialize Printer and ComputerPi
+        self.printer = Printer(num_sensors=1)
+        self.computer_pi = ComputerPi(self.printer, log_callback=self.log_message)
+        
+        # Set printer state change callback
+        self.printer.on_state_change = self.log_message
+        self.printer.on_gcode_update = self.handle_gcode_update
         
         # Initialize variables
         self.current_layer = 1
@@ -102,6 +110,22 @@ class PrinterSimulator:
         ttk.Button(self.control_frame, text="Pause Print", command=self.pause_print).pack(pady=5)
         ttk.Button(self.control_frame, text="Resume Print", command=self.resume_print).pack(pady=5)
         ttk.Button(self.control_frame, text="Stop Print", command=self.stop_print).pack(pady=5)
+        
+        # Sensor simulation controls
+        sensor_frame = ttk.LabelFrame(self.control_frame, text="Sensor Controls")
+        sensor_frame.pack(pady=10, fill=tk.BOTH, expand=True)
+        
+        ttk.Label(sensor_frame, text="Simulate sensor error:").pack(pady=5)
+        
+        # Create single sensor button
+        btn_frame = ttk.Frame(sensor_frame)
+        btn_frame.pack(fill=tk.X, padx=5, pady=2)
+        
+        ttk.Label(btn_frame, text="Sensor 0: Error Detection", width=25).pack(side=tk.LEFT)
+        
+        btn = ttk.Button(btn_frame, text="Trigger Error", 
+                       command=lambda: self.trigger_sensor(0))
+        btn.pack(side=tk.LEFT, padx=5)
         
         # Layer control
         layer_frame = ttk.Frame(self.control_frame)
@@ -241,103 +265,106 @@ class PrinterSimulator:
             self.log_message(f"Traceback: {traceback.format_exc()}")
 
     def simulate_error_detection(self):
-        """Simulate error detection during printing"""
-        if self.is_printing and not self.error_detected:
-            # Simulate random error detection
-            if np.random.random() < 0.1:  # 10% chance of error
-                self.error_detected = True
-                self.print_paused = True
-                self.log_message("ERROR DETECTED - Print paused")
-                self.handle_error()
-
-    def handle_error(self):
-        """Handle detected error by updating print parameters"""
-        try:
-            self.log_message("Analyzing error and updating parameters...")
-            
-            # Create and start error correction thread
-            correction_thread = threading.Thread(target=self.process_error_correction)
-            correction_thread.daemon = True  # Ensure thread doesn't block program exit
-            correction_thread.start()
-            
-        except Exception as e:
-            self.log_message(f"Error initiating error handling: {str(e)}")
-            import traceback
-            self.log_message(f"Traceback: {traceback.format_exc()}")
-            self.error_detected = False
+        """Simulate error detection during printing - now uses real sensor monitoring"""
+        # Process any commands from ComputerPi
+        self.printer.process_commands()
+        
+        # Check if printer was paused by ComputerPi
+        if self.printer.is_paused and not self.print_paused:
+            self.print_paused = True
+            self.log_message("Print paused by ComputerPi")
+        
+        # Check if printer was resumed by ComputerPi
+        if not self.printer.is_paused and self.print_paused:
             self.print_paused = False
-
-    def process_error_correction(self):
-        """Simulate error correction process"""
+            self.log_message("Print resumed by ComputerPi")
+        
+        # Update printer state based on our GUI state
+        self.printer.is_printing = self.is_printing
+        self.printer.current_layer = self.current_layer
+        
+    def trigger_sensor(self, sensor_id: int):
+        """Manually trigger a sensor error for testing"""
+        self.log_message(f"Manually triggering sensor {sensor_id}")
+        self.printer.set_sensor(sensor_id, 1)
+        
+        # Update printer position for context
+        # Use current layer to estimate Z position
+        z_height = self.current_layer * 0.2  # Assume 0.2mm layer height
+        self.printer.update_position(50.0, 50.0, z_height)
+    
+    def handle_gcode_update(self, gcode_path: str):
+        """Handle G-code update from ComputerPi"""
         try:
-            # Simulate processing time
-            time.sleep(2)
+            self.log_message(f"=== G-CODE UPDATE RECEIVED ===")
+            self.log_message(f"GUI: Loading new G-code from {gcode_path}")
             
-            # Update parameters using pi_sim
-            try:
-                # Simulate parameter update
-                update_print_parameters()
-                self.log_message("Parameters updated successfully")
-            except Exception as param_error:
-                self.log_message(f"Error updating print parameters: {str(param_error)}")
-                raise  # Re-raise to be caught by outer try block
-            
-            # Switch to alternative gcode (simulating received updated gcode)
-            try:
-                lb_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
-                                     "Gcode-Reader", "gcode", "fdm_regular", "LBdef.gcode")
-                if os.path.exists(lb_path):
-                    try:
-                        self.current_gcode = GcodeReader(lb_path, GcodeType.FDM_REGULAR)
-                        self.log_message("New G-code received and loaded")
-                    except Exception as gcode_error:
-                        self.log_message(f"Error loading new G-code: {str(gcode_error)}")
-                        raise
-                else:
-                    self.log_message("Error: Could not find LBdef.gcode, continuing with current G-code")
-            except Exception as file_error:
-                self.log_message(f"Error handling G-code file: {str(file_error)}")
-                raise
-            
-            # Update visualization safely on the main thread
-            def safe_update():
-                try:
-                    self.update_visualization()
-                    self.update_3d_views()
-                except Exception as viz_error:
-                    self.log_message(f"Error updating views after correction: {str(viz_error)}")
-                finally:
-                    # Always reset error flags and resume printing
-                    self.error_detected = False
-                    self.print_paused = False
-                    self.log_message("Print resumed with updated parameters")
-            
-            self.root.after(0, safe_update)
-            
+            # Load the new G-code file
+            import os
+            if os.path.exists(gcode_path):
+                new_gcode = GcodeReader(gcode_path, GcodeType.FDM_REGULAR)
+                
+                # Store old info for comparison
+                old_layers = self.current_gcode.n_layers
+                
+                # Update to new G-code
+                self.current_gcode = new_gcode
+                
+                self.log_message(f"GUI: Successfully loaded new G-code")
+                self.log_message(f"GUI: Old model: {old_layers} layers")
+                self.log_message(f"GUI: New model: {new_gcode.n_layers} layers")
+                
+                # Update visualizations on the main thread
+                self.log_message("GUI: Updating layer visualization...")
+                self.root.after(100, self.update_visualization)
+                
+                self.log_message("GUI: Updating 3D model views...")
+                self.root.after(200, self.update_3d_views)
+                
+                # Reset sensor after successful update
+                self.root.after(500, lambda: self.reset_sensor(0))
+                
+                self.log_message(f"=== G-CODE UPDATE COMPLETE ===")
+            else:
+                self.log_message(f"GUI: ERROR - G-code file not found: {gcode_path}")
         except Exception as e:
-            self.log_message(f"Error during error correction process: {str(e)}")
+            self.log_message(f"GUI: ERROR loading G-code: {str(e)}")
             import traceback
             self.log_message(f"Traceback: {traceback.format_exc()}")
-            # Reset on error
-            self.root.after(0, lambda: self.handle_correction_failure())
+    
+    def reset_sensor(self, sensor_id: int):
+        """Reset sensor after error has been handled"""
+        if sensor_id < len(self.printer.sensors):
+            self.printer.sensors[sensor_id] = 0
+            self.log_message(f"Sensor {sensor_id} reset to normal state")
 
     def start_print(self):
         """Start the printing process"""
         if not self.is_printing:
             self.is_printing = True
             self.log_message("Print started")
+            
+            # Start ComputerPi monitoring
+            self.computer_pi.start_monitoring()
+            
+            # Start printer
+            self.printer.start_print(self.current_gcode.n_layers)
+            
+            # Start simulation
             self.simulate_print_process()
 
     def pause_print(self):
         """Pause the printing process"""
         if self.is_printing and not self.print_paused:
             self.print_paused = True
+            self.printer.is_paused = True
             self.log_message("Print paused")
 
     def resume_print(self):
         """Resume the printing process"""
         if self.is_printing and self.print_paused:
             self.print_paused = False
+            self.printer.is_paused = False
             self.log_message("Print resumed")
 
     def stop_print(self):
@@ -346,53 +373,44 @@ class PrinterSimulator:
             self.is_printing = False
             self.print_paused = False
             self.error_detected = False
-            self.log_message("Print stopped")
             
-    def handle_correction_failure(self):
-        """Handle failures in the error correction process"""
-        self.log_message("Error correction failed - resetting to original state")
-        self.error_detected = False
-        self.print_paused = False
-        self.current_gcode = self.original_gcode  # Reset to original gcode
-        try:
-            self.update_visualization()
-        except Exception as viz_error:
-            self.log_message(f"Error updating visualization after failure: {str(viz_error)}")
-
-    def update_layer_view(self):
-        """Update the layer being displayed"""
-        try:
-            layer = int(self.layer_var.get())
-            if 1 <= layer <= self.current_gcode.n_layers:
-                self.current_layer = layer
-                self.update_visualization()
-            else:
-                self.log_message(f"Invalid layer number. Must be between 1 and {self.current_gcode.n_layers}")
-        except ValueError:
-            self.log_message("Invalid layer number")
-
+            # Stop printer and ComputerPi
+            self.printer.is_printing = False
+            self.computer_pi.stop_monitoring()
+            
+            self.log_message("Print stopped")
     def simulate_print_process(self):
         """Simulate the printing process"""
         try:
+            # First, process any commands from ComputerPi
+            self.simulate_error_detection()
+            
+            # Only advance layers if printing and not paused
             if self.is_printing and not self.print_paused:
                 self.log_message(f"Processing layer {self.current_layer}...")
                 
-                # Simulate error detection
-                self.simulate_error_detection()
-                
                 # Update current layer if no error
-                if not self.error_detected and not self.print_paused:
-                    if self.current_layer < self.current_gcode.n_layers:
-                        self.current_layer += 1
-                        self.layer_var.set(str(self.current_layer))
-                        try:
-                            self.update_visualization()
-                        except Exception as viz_error:
-                            self.log_message(f"Error updating visualization: {str(viz_error)}")
-                    else:
-                        self.log_message("Print completed")
-                        self.is_printing = False
-                        return
+                if self.current_layer < self.current_gcode.n_layers:
+                    self.current_layer += 1
+                    self.layer_var.set(str(self.current_layer))
+                    self.printer.current_layer = self.current_layer
+                    
+                    # Update position estimate
+                    z_height = self.current_layer * 0.2
+                    self.printer.update_position(50.0, 50.0, z_height)
+                    
+                    try:
+                        self.update_visualization()
+                    except Exception as viz_error:
+                        self.log_message(f"Error updating visualization: {str(viz_error)}")
+                else:
+                    self.log_message("Print completed")
+                    self.stop_print()
+                    return
+            elif self.print_paused:
+                # Log pause state occasionally
+                if self.current_layer % 5 == 0:  # Log every 5th check
+                    self.log_message("Print is paused, waiting for resume...")
                     
             # Schedule next update if still printing
             if self.is_printing:
@@ -403,6 +421,19 @@ class PrinterSimulator:
             import traceback
             self.log_message(f"Traceback: {traceback.format_exc()}")
             self.is_printing = False  # Stop printing on error
+
+    def update_layer_view(self):
+        """Update the layer being displayed"""
+        try:
+            layer = int(self.layer_var.get())
+            if 1 <= layer <= self.current_gcode.n_layers:
+                self.current_layer = layer
+                self.printer.current_layer = self.current_layer
+                self.update_visualization()
+            else:
+                self.log_message(f"Invalid layer number. Must be between 1 and {self.current_gcode.n_layers}")
+        except ValueError:
+            self.log_message("Invalid layer number")
 
 def main():
     root = tk.Tk()
