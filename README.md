@@ -2,6 +2,17 @@
 
 This repository contains multiple projects:
 
+## Setup Instructions
+
+### FFmpeg Setup
+The G-code reader requires FFmpeg for animation features. To set it up:
+
+1. Download FFmpeg Essentials build from: https://www.gyan.dev/ffmpeg/builds/
+2. Extract the downloaded zip file
+3. Place the extracted files in `Gcode-Reader/tools/ffmpeg/ffmpeg-8.0-essentials_build/`
+   - Specifically, `ffmpeg.exe`, `ffplay.exe`, and `ffprobe.exe` should be in the `bin` subdirectory
+4. The program will automatically detect and use these FFmpeg binaries
+
 ## AANT_pi_sim
 A simulation system for pi calculations.
 
