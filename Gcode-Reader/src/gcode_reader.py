@@ -912,18 +912,27 @@ class GcodeReader:
         """ plot the whole part in 3D """
         if not ax:
             fig, ax = create_axis(projection='3d')
+        else:
+            fig = ax.figure  # Get the figure from the provided axis
+            
         assert(self.n_segs > 0)
         self._compute_subpaths()
+        
         for xs, ys, zs in self.subpaths:
             if SINGLE_COLOR:
                 ax.plot(xs, ys, zs, color=color)
             else:
                 ax.plot(xs, ys, zs)
-        xmin, xmax, ymin, ymax, _, _ = self.xyzlimits
-        # ax.set_xlim([xmin, xmax])
-        # ax.set_ylim([ymin, ymax])
+                
+        xmin, xmax, ymin, ymax, zmin, zmax = self.xyzlimits
+        # Set axis limits with margins
         ax.set_xlim(add_margin_to_axis_limits(xmin, xmax))
         ax.set_ylim(add_margin_to_axis_limits(ymin, ymax))
+        ax.set_zlim(add_margin_to_axis_limits(zmin, zmax))
+        
+        # Ensure aspect ratio is maintained
+        ax.set_box_aspect([1, 1, 1])
+        
         return fig, ax
 
     def plot_layers(self, min_layer, max_layer, ax=None):
