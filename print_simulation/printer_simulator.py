@@ -41,21 +41,21 @@ class PrinterSimulator:
         
         # Initialize gcode readers first
         base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.octo_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "octo.gcode")
-        self.lb_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBdef.gcode")
+        self.lb_corrected_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBcor1.gcode")
+        self.lb_deflection_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBdef1.gcode")
         
         # Check if required files exist
-        if not os.path.exists(self.octo_path):
-            print(f"Error: Could not find octo.gcode at {self.octo_path}")  # Use print since logging not set up yet
+        if not os.path.exists(self.lb_corrected_path):
+            print(f"Error: Could not find LBcor1.gcode at {self.lb_corrected_path}")  # Use print since logging not set up yet
             return
             
-        if not os.path.exists(self.lb_path):
-            print(f"Warning: Could not find LBdef.gcode at {self.lb_path}")
+        if not os.path.exists(self.lb_deflection_path):
+            print(f"Warning: Could not find LBdef1.gcode at {self.lb_deflection_path}")
             print("Error recovery will continue with original G-code")
             
         # Initialize GCode reader objects
         try:
-            self.original_gcode = GcodeReader(self.octo_path, GcodeType.FDM_REGULAR)
+            self.original_gcode = GcodeReader(self.lb_corrected_path, GcodeType.FDM_REGULAR)
             self.current_gcode = self.original_gcode
         except Exception as e:
             print(f"Error initializing G-code reader: {str(e)}")
