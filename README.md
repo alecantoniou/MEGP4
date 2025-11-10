@@ -36,7 +36,7 @@ What you’ll see:
 
 - AANT_pi_sim/ – Core simulation of a Printer and a ComputerPi controller
 - print_simulation/ – Tkinter/Matplotlib GUI that visualizes the print and orchestrates the workflow
-- Gcode-Reader/ – Standalone parser/visualizer for G-code (used by the GUI)
+- Gcode-Reader/ – Standalone parser/visualizer for G-code (used by the GUI - adopted from https://github.com/zhangyaqi1989/Gcode-Reader)
 
 Key files:
 
