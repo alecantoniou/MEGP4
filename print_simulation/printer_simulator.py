@@ -13,7 +13,12 @@ import numpy as np
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 gcode_reader_path = os.path.join(base_dir, 'Gcode-Reader', 'src')
 aant_path = os.path.join(base_dir, 'AANT_pi_sim')
-sys.path.extend([gcode_reader_path, aant_path])
+
+# Add paths to sys.path before importing
+if gcode_reader_path not in sys.path:
+    sys.path.insert(0, gcode_reader_path)
+if aant_path not in sys.path:
+    sys.path.insert(0, aant_path)
 
 from gcode_reader import GcodeReader, GcodeType
 from pi_sim_system import Printer, ComputerPi
@@ -41,8 +46,8 @@ class PrinterSimulator:
         
         # Initialize gcode readers first
         base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.lb_corrected_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBcor1.gcode")
-        self.lb_deflection_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBdef1.gcode")
+        self.lb_corrected_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBcorrected.gcode")
+        self.lb_deflection_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBdefected.gcode")
         
         # Check if required files exist
         if not os.path.exists(self.lb_corrected_path):

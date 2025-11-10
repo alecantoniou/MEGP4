@@ -26,6 +26,7 @@ A comprehensive simulation system that models the interaction between a 3D print
    - Displays current layer, 3D models, and system logs
    - Provides manual sensor trigger controls for testing
    - Shows real-time interaction between Printer and ComputerPi
+   - Current demo uses a single sensor (ID 0) for generic error triggering
 
 ## Simulated Communication Protocol
 
@@ -84,20 +85,9 @@ The Printer and ComputerPi communicate through simulated serial connections usin
 }
 ```
 
-## Sensor Array
+## Sensor
 
-The printer has 8 sensors monitoring different aspects:
-
-| Sensor ID | Description | Error Type |
-|-----------|-------------|------------|
-| 0 | Nozzle Temperature | Temperature control failure |
-| 1 | Bed Adhesion | First layer adhesion issues |
-| 2 | Extrusion | Filament flow problems |
-| 3 | Layer Shift | Mechanical alignment issues |
-| 4 | Filament | Filament runout/jam |
-| 5 | Cooling | Cooling fan failure |
-| 6 | Vibration | Excessive vibration detected |
-| 7 | Power | Power supply issues |
+This demo configuration simplifies to a single binary sensor (ID 0). When triggered it represents a generic print error and initiates the pause → corrective G-code swap → resume workflow.
 
 ## Error Detection & Recovery Workflow
 
@@ -125,9 +115,8 @@ The printer has 8 sensors monitoring different aspects:
 
 ### Running the Simulation
 
-```bash
-cd print_simulation
-python printer_simulator.py
+```powershell
+python .\print_simulation\printer_simulator.py
 ```
 
 ### Testing Error Detection
@@ -173,17 +162,17 @@ HH:MM:SS - Printer resumed by ComputerPi
 ```
 MEGP4/
 ├── AANT_pi_sim/
-│   └── pi_sim_system.py          # Printer & ComputerPi classes
+│   └── pi_sim_system.py           # Printer & ComputerPi classes
 ├── print_simulation/
 │   ├── printer_simulator.py       # GUI application
 │   └── README.md                  # This file
 └── Gcode-Reader/
-    ├── src/
-    │   └── gcode_reader.py        # G-code parsing & visualization
-    └── gcode/
-        └── fdm_regular/
-            ├── octo.gcode         # Original print file
-            └── LBdef.gcode        # Alternative/corrective file
+   ├── src/
+   │   └── gcode_reader.py        # G-code parsing & visualization
+   └── gcode/
+      └── fdm_regular/
+         ├── LBbaseline.gcode   # Baseline (defective) model
+         └── LBdefected.gcode   # Corrective model swapped in after error
 ```
 
 ## Key Features

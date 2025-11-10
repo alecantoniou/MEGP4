@@ -153,12 +153,12 @@ class ComputerPi:
     def _initialize_error_table(self) -> List[Dict]:
         """
         Initialize error lookup table
-        For now, simplified to one sensor with LBdef.gcode as the solution for all positions
+        For now, simplified to one sensor with LBdefected.gcode as the solution for all positions
         """
-        # Get the path to LBdef.gcode
+        # Get the path to LBdefected.gcode
         import os
         base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        lbdef_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBdef.gcode")
+        lbdef_path = os.path.join(base_path, "Gcode-Reader", "gcode", "fdm_regular", "LBdefected.gcode")
         
         return [
             {

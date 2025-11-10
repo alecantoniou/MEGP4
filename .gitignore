@@ -34,3 +34,4 @@ Thumbs.db
 # Large binary files
 Gcode-Reader/tools/ffmpeg/ffmpeg-8.0-essentials_build/bin/*.exe
 Gcode-Reader/tools/ffmpeg/*.zip
+Gcode-Reader/gcode/fdm_regular/*.mp4
