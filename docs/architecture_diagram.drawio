@@ -1,0 +1,160 @@
+<mxfile host="app.diagrams.net" modified="2025-11-10T12:00:00.000Z" agent="GitHub Copilot" version="24.7.17" etag="draw.io">
+  <diagram id="system-architecture" name="System Architecture">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="3D Printer Digital Twin Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="384.5" y="40" width="400" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Printer Component -->
+        <mxCell id="printer-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="140" width="280" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="printer-title" value="Printer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="170" y="150" width="100" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Printer internals -->
+        <mxCell id="sensor-array" value="Sensor Array&#xa;(Binary: 0/1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="100" y="190" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="position" value="Position&#xa;{x, y, z}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="230" y="190" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="state" value="State&#xa;is_printing&#xa;is_paused&#xa;current_layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="100" y="260" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="outgoing-queue" value="outgoing_data&#xa;Queue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="230" y="260" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="incoming-queue" value="incoming_commands&#xa;Queue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="100" y="350" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- ComputerPi Component -->
+        <mxCell id="computerpi-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="480" y="140" width="280" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="computerpi-title" value="ComputerPi" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="570" y="150" width="100" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- ComputerPi internals -->
+        <mxCell id="monitor-thread" value="Monitor Thread&#xa;(background)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="500" y="190" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="error-table" value="Error Table&#xa;sensor → G-code" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="630" y="190" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="analysis" value="Error Analysis&#xa;_analyze_error()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="500" y="260" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="commands" value="Command Sender&#xa;PAUSE/RESUME&#xa;UPDATE_GCODE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="630" y="260" width="110" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="workflow" value="6-Step Recovery&#xa;Protocol" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="540" y="350" width="160" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- GUI Component -->
+        <mxCell id="gui-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="820" y="140" width="280" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="gui-title" value="GUI (PrinterSimulator)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="860" y="150" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- GUI internals -->
+        <mxCell id="layer-view" value="Layer View&#xa;(2D Animation)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="840" y="190" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="3d-views" value="3D Model Views&#xa;Original | Updated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="970" y="190" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="controls" value="Controls&#xa;Start/Pause/Resume&#xa;Trigger Sensor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="840" y="260" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="log" value="Log Panel&#xa;(Protocol Trace)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="970" y="260" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="callbacks" value="Callbacks&#xa;on_gcode_update" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="880" y="350" width="160" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Communication arrows -->
+        <mxCell id="arrow1" value="SENSOR_ALERT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673a6;endArrow=classic;endFill=1;" edge="1" parent="1" source="outgoing-queue" target="monitor-thread">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="285" />
+              <mxPoint x="400" y="215" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow2" value="PAUSE/RESUME/&#xa;UPDATE_GCODE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=classic;endFill=1;" edge="1" parent="1" source="commands" target="incoming-queue">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="420" y="295" />
+              <mxPoint x="420" y="375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow3" value="Callback" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=classic;endFill=1;dashed=1;" edge="1" parent="1" source="printer-box" target="callbacks">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="450" />
+              <mxPoint x="960" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow4" value="Control" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;dashed=1;" edge="1" parent="1" source="controls" target="printer-box">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="900" y="480" />
+              <mxPoint x="220" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- GcodeReader -->
+        <mxCell id="gcode-box" value="GcodeReader&#xa;(Gcode-Reader/src)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="880" y="520" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow5" value="Parse &amp; Plot" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673a6;endArrow=classic;endFill=1;dashed=1;" edge="1" parent="1" source="callbacks" target="gcode-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Data flow label -->
+        <mxCell id="dataflow-title" value="Data Flow" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="80" y="460" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dataflow1" value="1. Sensor triggers → SENSOR_ALERT sent" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="80" y="490" width="280" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dataflow2" value="2. ComputerPi analyzes → sends PAUSE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="80" y="510" width="280" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dataflow3" value="3. Lookup error table → find corrective G-code" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="80" y="530" width="280" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dataflow4" value="4. Send UPDATE_GCODE → Printer notifies GUI" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="80" y="550" width="280" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dataflow5" value="5. GUI reloads G-code and updates views" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="80" y="570" width="280" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dataflow6" value="6. Send RESUME → print continues" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="80" y="590" width="280" height="20" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
