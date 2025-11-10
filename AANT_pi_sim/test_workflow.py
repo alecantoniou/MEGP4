@@ -2,7 +2,7 @@
 Test the complete workflow:
 1. Trigger error
 2. Printer pauses (layers stop changing)
-3. ComputerPi finds solution (LBdef.gcode)
+3. ComputerPi finds solution (LBdefected.gcode)
 4. Printer loads new G-code
 5. Printer resumes with new G-code
 """
@@ -74,7 +74,7 @@ def test_complete_workflow():
     print(f"G-code updated: {gcode_updated['value']} (should be True)")
     if gcode_updated['path']:
         print(f"New G-code path: {gcode_updated['path']}")
-        print(f"Contains 'LBdef.gcode': {'LBdef.gcode' in gcode_updated['path']}")
+    print(f"Contains 'LBdefected.gcode': {'LBdefected.gcode' in gcode_updated['path']}")
     
     print("\n" + "=" * 70)
     print("STEP 5: Check printer is resumed")
@@ -93,7 +93,7 @@ def test_complete_workflow():
     print(f"✓ Error detected: True")
     print(f"✓ Printer paused: True")
     print(f"✓ G-code updated: {gcode_updated['value']}")
-    print(f"✓ Correct G-code (LBdef): {'LBdef.gcode' in (gcode_updated['path'] or '')}")
+    print(f"✓ Correct G-code (LBdefected): {'LBdefected.gcode' in (gcode_updated['path'] or '')}")
     print(f"✓ Printer resumed: {not printer.is_paused}")
     print("=" * 70)
 
