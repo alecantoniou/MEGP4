@@ -36,7 +36,7 @@ python printer_simulator.py
 4. **Lookup Solution** (Step 3)
    - Log shows: "ComputerPi: Step 3 - Looking up solution..."
    - Log shows: "ComputerPi: Found matching entry for sensor 0"
-   - Log shows: "ComputerPi: Suggested G-code: ...LBdef.gcode"
+   - Log shows: "ComputerPi: Suggested G-code: ...LBdefected.gcode"
 
 5. **Update Parameters** (Step 4)
    - Log shows: "ComputerPi: Step 4 - Updating print parameters..."
@@ -46,17 +46,17 @@ python printer_simulator.py
    - Log shows: "ComputerPi: Step 5 - Sending corrective G-code..."
    - Log shows: "ComputerPi: G-code upload confirmed by printer"
    - Log shows: "=== G-CODE UPDATE RECEIVED ==="
-   - Log shows: "GUI: Loading new G-code from ...LBdef.gcode"
+   - Log shows: "GUI: Loading new G-code from ...LBdefected.gcode"
    - Log shows: "GUI: Old model: X layers"
    - Log shows: "GUI: New model: Y layers"
-   - **3D model views update to show LBdef.gcode**
+   - **3D model views update to show LBdefected.gcode**
    - **"Updated Model" panel shows the new geometry**
 
 7. **Resume Printing** (Step 6)
    - Log shows: "ComputerPi: Step 6 - Resuming print..."
    - Log shows: "Print resumed by ComputerPi"
    - **Layer counter RESUMES advancing**
-   - Now printing with the NEW G-code (LBdef.gcode)
+   - Now printing with the NEW G-code (LBdefected.gcode)
 
 8. **Sensor Reset**
    - Log shows: "Sensor 0 reset to normal state"
@@ -68,13 +68,12 @@ python printer_simulator.py
 - Freezes when paused, resumes when print continues
 
 ### Original Model (Top Right)
-- Always shows octo.gcode (the original file)
-- Never changes
+- Shows the initial baseline model (LBcorrected.gcode or LBbaseline.gcode depending on configuration)
 
 ### Updated Model (Bottom Right)
 - Initially shows "Updated Model (Not Yet Modified)"
-- After error handling, updates to show LBdef.gcode
-- You should see different geometry (LBdef is a lattice bunny vs octo is an octopus)
+- After error handling, updates to show LBdefected.gcode
+- You should see different geometry vs the baseline model
 
 ### Log Panel (Bottom)
 - Shows all communication between Printer and ComputerPi
@@ -83,14 +82,13 @@ python printer_simulator.py
 
 ## Expected Differences Between Models
 
-**octo.gcode** (original):
-- Octopus shape
-- ~X layers
+**LBbaseline.gcode / LBcorrected.gcode** (initial):
+- Baseline geometry used to start the print
+- Layer count and shape differ from the corrective file
 
-**LBdef.gcode** (updated):
-- Lattice bunny shape  
-- Different number of layers
-- Different geometry visible in 3D view
+**LBdefected.gcode** (updated):
+- Corrective geometry used after the error is detected
+- Different number of layers and path geometry
 
 ## Troubleshooting
 
